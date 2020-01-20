@@ -7,7 +7,7 @@
 
 #define F_CPU 16000000UL
 #define ROW_COUNT 4
-#define ROW_START 4
+#define ROW_START 0
 #define ROW_MASK 0xF
 #define CLS_COUNT 3
 #define CLS_START 4
