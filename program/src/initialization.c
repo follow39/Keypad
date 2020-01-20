@@ -1,0 +1,16 @@
+#include "initialization.h"
+
+
+void init_gpio(void)
+{
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+	
+	GPIOA->MODER |= GPIO_MODER_MODER4_0 | GPIO_MODER_MODE5_0 | GPIO_MODER_MODE6_0;
+	GPIOA->OTYPER |= GPIO_OTYPER_OT4 | GPIO_OTYPER_OT5 | GPIO_OTYPER_OT6;
+	GPIOA->PUPDR |= GPIO_PUPDR_PUPD0_0 | GPIO_PUPDR_PUPD1_0 | GPIO_PUPDR_PUPD2_0 | GPIO_PUPDR_PUPD3_0;	
+}
+
+void init(void)
+{
+	init_gpio();	
+}
