@@ -19,8 +19,42 @@ int main(void)
 	xSingleButtonLongPressed = xSemaphoreCreateBinary();
 	xPairButtonLongPressed = xSemaphoreCreateBinary();
 
-
+	xTaskCreate(&vButtonCheck,
+	            (char *)"ButtonCheck",
+	            configMINIMAL_STACK_SIZE, 
+	            NULL,
+	            1,
+	            NULL);
 	
+	xTaskCreate(&vSingleButtonShortPressed,
+	            (char *)"SingleButtonShortPressed",
+	            configMINIMAL_STACK_SIZE, 
+	            NULL,
+	            1,
+	            NULL);
+	
+	xTaskCreate(&vPairButtonShortPressed,
+	            (char *)"PairButtonShortPressed",
+	            configMINIMAL_STACK_SIZE, 
+	            NULL,
+	            1,
+	            NULL);
+
+	xTaskCreate(&vSingleButtonLongPressed,
+	            (char *)"SingleButtonLongPressed",
+	            configMINIMAL_STACK_SIZE, 
+	            NULL,
+	            1,
+	            NULL);
+
+	xTaskCreate(&vPairButtonLongPressed,
+	            (char *)"PairButtonLongPressed",
+	            configMINIMAL_STACK_SIZE, 
+	            NULL,
+	            1,
+	            NULL);
+
+							
 	vTaskStartScheduler();
 }
 
@@ -30,8 +64,6 @@ void vButtonCheck(void *pvParameters)
 	uint16_t key_code = 0;
 	
 	const uint8_t delay = DELAY_SCAN;
-	uint16_t scan_time = 0;	
-	uint8_t key_state = 0;
 	char temp_symbol = NONE_SYMBOL;
 	
 	
@@ -232,7 +264,7 @@ void vButtonCheck(void *pvParameters)
 
 //read the ports and convert to a 16-bit value, where 
 //each bit represents a button with the corresponding number
-inline uint16_t readKeys(void)
+uint16_t readKeys(void)
 {
 	uint16_t result = 0;
 	uint16_t temp = 0;

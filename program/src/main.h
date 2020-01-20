@@ -28,12 +28,6 @@
 	* PA4-PA6 - CLM1-CLM3
 	*/
 
-struct
-{
-	char button1;
-	char button2;
-} pair_buttons;
-
 
 const char symbols[] = {'1', '2', '3',
 												'4', '5', '6',
@@ -42,15 +36,15 @@ const char symbols[] = {'1', '2', '3',
 
 
 int main(void);
-void vButtonCheck(void *pvParameters);
 inline uint16_t readKeys(void);
+void vButtonCheck(void *pvParameters);
 void vSingleButtonShortPressed(void *pvParameters);
 void vPairButtonShortPressed(void *pvParameters);
 void vSingleButtonLongPressed(void *pvParameters);
 void vPairButtonLongPressed(void *pvParameters);
 
 //*******************************************************
-void single_key_pressed(char key);
-void double_key_pressed(char key1, char key2);
-void single_key_long_pressed(char key);
-void double_key_long_pressed(char key1, char key2);
+void single_key_pressed(char key){}
+void double_key_pressed(char key1, char key2){}
+void single_key_long_pressed(char key){}
+void double_key_long_pressed(char key1, char key2){}
