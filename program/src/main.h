@@ -12,8 +12,9 @@
 #define ROW_MASK 0xF
 
 #define CLS_COUNT 3
-#define CLS_START 4
+#define CLS_START GPIO_BSRR_BS4
 #define CLS_MASK 0x70
+#define CLS_RESET (0x70 << 16)
 
 #define BUTTONS_COUNT 12
 

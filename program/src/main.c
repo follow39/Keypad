@@ -295,19 +295,19 @@ uint16_t readKeys(void)
 	
 	char array[CLS_COUNT];
 	
-	uint16_t shift = 1 << CLS_START;
+	uint32_t shift = CLS_START;
 	
 	//read rows state for each cls
 	for (uint8_t i = 0; i < CLS_COUNT; ++i)
 	{
 		shift <<= i;
 		
-		GPIOA->ODR = shift^CLS_MASK;
+		GPIOA->BSRR = (shift^CLS_MASK) | (shift << GPIO_BSRR_BR0_Pos);
 		asm("nop");
 		asm("nop");
 		array[i] = GPIOA->IDR;
 	}
-	GPIOA->ODR |= CLS_MASK;
+	GPIOA->BSRR |= CLS_MASK;
 	
 	
 	//processing pressed buttons
