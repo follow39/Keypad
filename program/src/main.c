@@ -64,8 +64,7 @@ void vButtonCheck(void *pvParameters)
 	uint16_t key_code = 0;
 	
 	const uint8_t delay = DELAY_SCAN;
-	char temp_symbol = NONE_SYMBOL;
-	
+	char temp_symbol = NONE_SYMBOL;	
 	
 	uint8_t button_dropped_counter = 0;
 	uint16_t key_code_dropped = 0;
@@ -74,15 +73,16 @@ void vButtonCheck(void *pvParameters)
 	uint16_t key_code_long = 0;
 	
 	uint16_t buttons_time[BUTTONS_COUNT];
-	uint16_t buttons_pressed[BUTTONS_COUNT];
+	uint8_t buttons_pressed[BUTTONS_COUNT];
 	
 	while (1)
 	{
-		key_code = readKeys();
 		button_dropped_counter = 0;
 		key_code_dropped = 0;
 		button_long_counter = 0;
 		key_code_long = 0;
+		
+		key_code = readKeys();
 
 		//loop for integrating ports press time and
 		//detecting button drops
@@ -94,7 +94,7 @@ void vButtonCheck(void *pvParameters)
 				buttons_time[i] += delay;
 				
 				//condition for setting the button pressed flag
-				if ((buttons_time[i] > SHORT_CLICK) && (buttons_time[i] < SHORT_CLICK*3))
+				if ((buttons_time[i] > SHORT_CLICK) && (buttons_time[i] < LONG_CLICK))
 				{
 					buttons_pressed[i] = 1;
 				}
@@ -127,21 +127,21 @@ void vButtonCheck(void *pvParameters)
 					buttons_time[i] = BUTTON_DROP_INIT;
 				}
 				
-				if (buttons_time[i] >= DECREASE_DROPPED)
+				if (buttons_time[i] > DECREASE_DROPPED)
 				{
 					buttons_time[i] -= DECREASE_DROPPED;
 				}
 				else
 				{
-					buttons_time[i] = 0;				
+					buttons_time[i] = 0;
+					
+					//if button was dropped with recorded short press
+					if (buttons_pressed[i] != 0)
+					{
+						++button_dropped_counter;
+						key_code_dropped |= 1 << i;
+					}
 				}
-			}
-			
-			//if button was dropped with recorded short press
-			if ((buttons_time[i] <= SHORT_CLICK_ERROR) && (buttons_pressed[i] != 0))
-			{
-				++button_dropped_counter;
-				key_code_dropped |= 1 << i;
 			}
 		}
 		
@@ -153,8 +153,33 @@ void vButtonCheck(void *pvParameters)
 				{
 					if (key_code_dropped & (1 << i))
 					{
-						xQueueSend(xQueueSingleButton, (char *)&symbols[i], (TickType_t )0);
-						xSemaphoreGive(xSingleButtonShortPressed);
+						temp_symbol = symbols[i];
+					}
+					
+					if ((buttons_pressed[i] == 1) && (buttons_time[i] < SHORT_CLICK_ERROR))
+					{
+						++button_dropped_counter;
+					}
+				}
+				
+				if (button_dropped_counter == 1)
+				{
+					xQueueSend(xQueueSingleButton, (char *)&temp_symbol, (TickType_t )0);
+					xSemaphoreGive(xSingleButtonShortPressed);
+				}
+				else
+				{
+					for (int i = 0; i < BUTTONS_COUNT; ++i)
+					{
+						if ((buttons_pressed[i] == 1) && (buttons_time[i] < SHORT_CLICK_ERROR))
+						{
+							xQueueSend(xQueuePairButtons, (char *)&temp_symbol, (TickType_t )0);
+							xQueueSend(xQueuePairButtons, (char *)&symbols[i], (TickType_t )0);
+							xSemaphoreGive(xPairButtonShortPressed);
+							
+							temp_symbol = NONE_SYMBOL;
+							break;								
+						}
 					}
 				}
 			}
@@ -267,7 +292,6 @@ void vButtonCheck(void *pvParameters)
 uint16_t readKeys(void)
 {
 	uint16_t result = 0;
-	uint16_t temp = 0;
 	
 	char array[CLS_COUNT];
 	
@@ -277,9 +301,8 @@ uint16_t readKeys(void)
 	for (uint8_t i = 0; i < CLS_COUNT; ++i)
 	{
 		shift <<= i;
-		temp = shift^CLS_MASK;		
 		
-		GPIOA->ODR = temp;
+		GPIOA->ODR = shift^CLS_MASK;
 		asm("nop");
 		asm("nop");
 		array[i] = GPIOA->IDR;
@@ -290,10 +313,9 @@ uint16_t readKeys(void)
 	//processing pressed buttons
 	for (uint8_t i = 0; i < CLS_COUNT; ++i)
 	{
-		for (int j = 0; j < ROW_COUNT; ++j)
+		for (uint8_t j = 0; j < ROW_COUNT; ++j)
 		{
-			temp = array[i] & (1 << j);
-			if (temp)
+			if (array[i] & (1 << j))
 			{
 				result |= (1 << (j*CLS_COUNT + i));
 			}			

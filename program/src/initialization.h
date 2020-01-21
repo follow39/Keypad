@@ -5,7 +5,6 @@
 #define INIT_H
 
 
-void init_clock(void);
 void init_gpio(void);
 void init(void);
 

@@ -6,18 +6,24 @@
 #include "initialization.h"
 
 #define F_CPU 16000000UL
+
 #define ROW_COUNT 4
 #define ROW_START 0
 #define ROW_MASK 0xF
+
 #define CLS_COUNT 3
 #define CLS_START 4
 #define CLS_MASK 0x70
+
 #define BUTTONS_COUNT 12
+
 #define SHORT_CLICK 100
 #define SHORT_CLICK_ERROR (SHORT_CLICK/2)
+
 #define LONG_CLICK 1000
 #define LONG_CLICK_ERROR (LONG_CLICK/10)
-#define BUTTON_DROP_INIT (SHORT_CLICK-30)
+
+#define BUTTON_DROP_INIT (SHORT_CLICK-10)
 #define DELAY_SCAN 10
 #define DECREASE_DROPPED 10
 #define NONE_SYMBOL '\0'
