@@ -85,7 +85,7 @@ void vButtonCheck(void *pvParameters)
 		key_code = readKeys();
 
 		//loop for integrating ports press time and
-		//detecting button drops
+		//detecting buttons events
 		for (int i = 0; i < BUTTONS_COUNT; ++i)
 		{
 			//if key pressed now
