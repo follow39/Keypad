@@ -60,7 +60,7 @@ int main(void)
 
 
 void vButtonCheck(void *pvParameters)
-{	
+{
 	uint16_t key_code = 0;
 	
 	const uint8_t delay = DELAY_SCAN;
@@ -125,6 +125,7 @@ void vButtonCheck(void *pvParameters)
 				if (buttons_time[i] > SHORT_CLICK)
 				{
 					buttons_time[i] = BUTTON_DROP_INIT;
+					continue;
 				}
 				
 				if (buttons_time[i] > DECREASE_DROPPED)
@@ -154,8 +155,7 @@ void vButtonCheck(void *pvParameters)
 					if (key_code_dropped & (1 << i))
 					{
 						temp_symbol = symbols[i];
-					}
-					
+					}					
 					if ((buttons_pressed[i] == 1) && (buttons_time[i] < SHORT_CLICK_ERROR))
 					{
 						++button_dropped_counter;
@@ -167,6 +167,8 @@ void vButtonCheck(void *pvParameters)
 				{
 					xQueueSend(xQueueSingleButton, (char *)&temp_symbol, (TickType_t )0);
 					xSemaphoreGive(xSingleButtonShortPressed);
+					
+					temp_symbol = NONE_SYMBOL;
 				}
 				else
 				{
