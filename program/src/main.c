@@ -109,7 +109,7 @@ void vButtonCheck(void *pvParameters)
 			else
 			{
 				//if button wasn't press
-				if (buttons_time[i] == 0)
+				if ((buttons_time[i] == 0) && (buttons_pressed[i] == 0))
 					continue;
 				
 				//if button long press was process before
@@ -162,6 +162,7 @@ void vButtonCheck(void *pvParameters)
 					}
 				}
 				
+				//if no other buttons have been dropped
 				if (button_dropped_counter == 1)
 				{
 					xQueueSend(xQueueSingleButton, (char *)&temp_symbol, (TickType_t )0);
@@ -169,6 +170,7 @@ void vButtonCheck(void *pvParameters)
 				}
 				else
 				{
+					//search for another dropped button
 					for (int i = 0; i < BUTTONS_COUNT; ++i)
 					{
 						if ((buttons_pressed[i] == 1) && (buttons_time[i] < SHORT_CLICK_ERROR))
@@ -281,8 +283,7 @@ void vButtonCheck(void *pvParameters)
 				}				
 			}			
 		}
-		
-		
+				
 		vTaskDelay(delay);
 	}	
 }
