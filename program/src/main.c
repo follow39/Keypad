@@ -154,6 +154,7 @@ void vButtonCheck(void *pvParameters)
 				{
 					if (key_code_dropped & (1 << i))
 					{
+						buttons_pressed[i] = 0;
 						temp_symbol = symbols[i];
 					}					
 					if ((buttons_pressed[i] == 1) && (buttons_time[i] < SHORT_CLICK_ERROR))
@@ -177,6 +178,8 @@ void vButtonCheck(void *pvParameters)
 					{
 						if ((buttons_pressed[i] == 1) && (buttons_time[i] < SHORT_CLICK_ERROR))
 						{
+							buttons_pressed[i] = 0;
+							
 							xQueueSend(xQueuePairButtons, (char *)&temp_symbol, (TickType_t )0);
 							xQueueSend(xQueuePairButtons, (char *)&symbols[i], (TickType_t )0);
 							xSemaphoreGive(xPairButtonShortPressed);
@@ -193,6 +196,8 @@ void vButtonCheck(void *pvParameters)
 				{
 					if (key_code_dropped & (1 << i))
 					{
+						buttons_pressed[i] = 0;
+						
 						if (temp_symbol == NONE_SYMBOL)
 						{
 							temp_symbol = symbols[i];
